@@ -30,7 +30,7 @@ def catch_all(path):
             Only return the HTML/CSS/JS, nothing else.
             Do not include any comments or explanations.
             Try to make the web page as beautiful and functional as possible.
-            Avoid mentioning that this is a simulation, make it as realistic as possible.
+            Don't mention that this is a simulation, make it as realistic as possible.
         """,
         config=types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_budget=0) # Disables thinking
