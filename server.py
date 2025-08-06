@@ -14,8 +14,8 @@ app = Flask(__name__)
 
 os.makedirs("html", exist_ok=True)
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route('/', defaults={'path': ''}, methods=['GET', 'POST'])
+@app.route('/<path:path>', methods=['GET', 'POST'])
 def catch_all(path):
     path = request.full_path.strip("?")
     filename = f"html/" + sanitize_filename(path) + ".html"
