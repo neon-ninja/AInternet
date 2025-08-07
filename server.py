@@ -38,7 +38,7 @@ def generate(path):
     ):
         if not chunk.text:
             continue
-        chunk = chunk.text.strip("```html\n").strip("```")
+        chunk = chunk.text.removeprefix("```html\n").removesuffix("```")
         yield chunk
         html += chunk
 
