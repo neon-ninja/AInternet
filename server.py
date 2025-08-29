@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-from google import genai
-from google.genai import types
+from openai import OpenAI
 import os
 from flask import Flask, request
 from pathvalidate import sanitize_filename
 import dotenv
 dotenv.load_dotenv()
 
-# The client gets the API key from the environment variable `GEMINI_API_KEY`.
-client = genai.Client()
+# The client gets the API key from the environment variable `CEREBRAS_API_KEY`.
+client = OpenAI(
+    api_key=os.getenv("CEREBRAS_API_KEY"),
+    base_url="https://api.cerebras.ai/v1",
+)
 
 app = Flask(__name__)
 
@@ -22,25 +24,33 @@ def generate(path):
             return
 
     html = ""
-    for chunk in client.models.generate_content_stream(
-        model="gemini-2.5-flash-lite",
-        contents=f"""You are a web server. A request has just come in on the path {path}.
+    stream = client.chat.completions.create(
+        model="llama3.1-8b",
+        messages=[
+            {
+                "role": "user",
+                "content": f"""You are a web server. A request has just come in on the path {path}.
             Respond with HTML/CSS/JS that is appropriate for that path.
             Only return the HTML/CSS/JS, nothing else.
             Do not include any comments or explanations.
             Try to make the web page as beautiful and functional as possible.
             Don't mention that this is a simulation, make it as realistic as possible.
             You can add relative links if appropriate, but if the user follows a relative link, you'll have to handle that too, so be sure to pass enough context for yourself to understand what you're doing in the URL.
-        """,
-        config=types.GenerateContentConfig(
-            thinking_config=types.ThinkingConfig(thinking_budget=0) # Disables thinking
-        )
-    ):
-        if not chunk.text:
-            continue
-        chunk = chunk.text.removeprefix("```html\n").removesuffix("```")
-        yield chunk
-        html += chunk
+        """
+            }
+        ],
+        stream=True,
+        max_tokens=4096,
+        temperature=0.7
+    )
+    
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            content = chunk.choices[0].delta.content
+            # Remove any markdown code block markers
+            content = content.removeprefix("```html\n").removesuffix("```")
+            yield content
+            html += content
 
     with open(filename, "w") as f:
         f.write(html)
