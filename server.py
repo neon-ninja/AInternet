@@ -33,7 +33,7 @@ def generate(path):
 
     html = ""
     stream = client.chat.completions.create(
-        model="llama3.1-8b",
+        model="qwen-3-coder-480b",
         messages=[
             {
                 "role": "user",
