@@ -7,8 +7,16 @@ import dotenv
 dotenv.load_dotenv()
 
 # The client gets the API key from the environment variable `CEREBRAS_API_KEY`.
+api_key = os.getenv("CEREBRAS_API_KEY")
+if not api_key:
+    print("Error: CEREBRAS_API_KEY environment variable is not set.")
+    print("Please set your Cerebras API key:")
+    print("  export CEREBRAS_API_KEY=your_api_key_here")
+    print("Or create a .env file with your API key.")
+    exit(1)
+
 client = OpenAI(
-    api_key=os.getenv("CEREBRAS_API_KEY"),
+    api_key=api_key,
     base_url="https://api.cerebras.ai/v1",
 )
 
