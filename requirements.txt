@@ -1,4 +1,4 @@
-google-genai
+cerebras_cloud_sdk
 python-dotenv
 Flask
 pathvalidate
